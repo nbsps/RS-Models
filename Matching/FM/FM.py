@@ -13,11 +13,11 @@ import matplotlib.pyplot as plt
 data_path = '../../dataset/criteo/train.csv'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-EMBEDDING_DIM = 10
-LEARNING_RATE = 1e-3
+EMBEDDING_DIM = 8
+LEARNING_RATE = 5e-4
 REGULARIZATION = 1e-6
-BATCH_SIZE = 1024
-EPOCH = 600
+BATCH_SIZE = 4096
+EPOCH = 100
 TRIAL = 100
 
 
@@ -43,7 +43,11 @@ class FactorizationMachine(nn.Module):
         self.embed1 = Embedding(sum(field_dims), 1)
         self.embed2 = Embedding(sum(field_dims), embed_dim)
         self.bias = nn.Parameter(torch.zeros((1,)), requires_grad=True)
-        self.offsets = np.array((0, *np.cumsum(field_dims)[:-1]), dtype=np.int)
+        self.offsets = np.array((0, *np.cumsum(field_dims)[:-1],), dtype=np.int)
+
+        self.embed1.weight.data.uniform_(0, 0.005)
+        self.embed2.weight.data.uniform_(0, 0.005)
+        self.bias.data.uniform_(-1, 1)
 
     def forward(self, x):
         # x shape: (batch_size, num_fields)
@@ -81,7 +85,7 @@ if __name__ == "__main__":
     y = np.array(data_df['Label'])
     field_dims = (data.max(axis=0).astype(int) + 1).tolist()
 
-    train_X, test_X, train_y, test_y = train_test_split(data, y, train_size=0.8, random_state=2022)
+    train_X, test_X, train_y, test_y = train_test_split(data, y, train_size=0.7, random_state=2022)
     train_dataset = CriteoDataset(train_X, train_y)
     test_dataset = CriteoDataset(test_X, test_y)
     train_loader = DataLoader(train_dataset, batch_size=1024)
