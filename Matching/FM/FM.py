@@ -61,7 +61,6 @@ class FactorizationMachine(nn.Module):
 
 
 if __name__ == "__main__":
-    # dataset = CriteoDataset(, sample_num=100000)
     data_df = pd.read_csv(data_path)
     # remove Id column
     data_df = data_df.iloc[:, 1:]
