@@ -123,7 +123,7 @@ if __name__ == "__main__":
         test_auc_list.append(auc)
         print("epoch {}, train loss is {}, test auc is {}".format(epoch, train_loss, auc))
 
-    print("max auc in test dataset: ".format(max(test_auc_list)))
+    print("max auc in test dataset: {}".format(max(test_auc_list)))
     plt.plot(train_loss_list, label='train_loss')
     plt.plot(test_auc_list, label='test_auc')
     plt.legend()
