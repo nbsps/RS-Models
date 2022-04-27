@@ -58,6 +58,7 @@ def main():
     optim = torch.optim.Adam(params=model.parameters(), lr=1e-3)
     loss_func = nn.MSELoss().to(device)
 
+    test_mse_list = []
     for epoch in range(epochs):
         model.train()
         total_loss, total_len = 0, 0
@@ -82,9 +83,11 @@ def main():
                 labels.extend(y.tolist())
                 predicts.extend(predict.tolist())
         mse = mean_squared_error(np.array(labels), np.array(predicts))
-        print("epoch {}, train loss is {}, val mse is {}".format(epoch, train_loss, mse))
+        test_mse_list.append(mse)
+        print("epoch {}, train loss is {:.4f}, val mse is {:.4f}".format(epoch, train_loss, mse))
         writer.add_scalar("MF-MSE", mse, epoch)
         writer.add_scalar("MF-Loss", train_loss, epoch)
+    print("min test mse is {:.4f}".format(min(test_mse_list)))
     writer.close()
 
 
