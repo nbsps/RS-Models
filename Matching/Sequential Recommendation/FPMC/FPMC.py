@@ -3,18 +3,18 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import numpy as np
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader, Dataset
 
 data_path = '../../../dataset/ml-100k/u.data'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-EMBEDDING_DIM = 8
+EMBEDDING_DIM = 64
 LEARNING_RATE = 1e-3
 REGULARIZATION = 1e-6
-BATCH_SIZE = 1024
-EPOCH = 50
-TRIAL = 100
+BATCH_SIZE = 2048
+EPOCH = 200
 
 
 # define seq dataset of ml-100k
@@ -30,7 +30,7 @@ class MlSeqDataset(Dataset):
         # generate neg sample
         while True:
             iidneg = np.random.randint(0, self.n_items)
-            if iidneg != iidn:
+            if iidneg not in user_history[uid]:
                 break
         sample = (uid, iidp, iidn, iidneg)
         return sample
@@ -52,6 +52,11 @@ class FPMC(nn.Module):
         self.VLI = nn.Embedding(self.n_items, self.k_IL)
         self.VUI = nn.Embedding(self.n_users, self.k_UI)
         self.VIU = nn.Embedding(self.n_items, self.k_UI)
+
+        self.VIL.weight.data.uniform_(0, 0.05)
+        self.VLI.weight.data.uniform_(0, 0.05)
+        self.VUI.weight.data.uniform_(0, 0.05)
+        self.VIU.weight.data.uniform_(0, 0.05)
 
     def forward(self, uid, basket_prev, iid):
         x_MF = torch.sum(self.VUI(uid) * self.VIU(iid), dim=1)
@@ -94,18 +99,19 @@ if __name__ == "__main__":
     for uid, h in user_history.items():
         if len(h) < 5:
             continue
-        for i in range(len(h) - 3):
+        for i in range(len(h) - 1):
             train_history.append((uid, h[i], h[i + 1]))
-        test_history.append((uid, h[i + 1], h[i + 2]))
-        test_history.append((uid, h[i + 2], h[i + 3]))
+        # test_history.append((uid, h[i + 1], h[i + 2]))
+        # test_history.append((uid, h[i + 2], h[i + 3]))
+    train_history, test_history = train_test_split(train_history, train_size=0.7, random_state=2022)
     train_dataset = MlSeqDataset(train_history, n_users, n_items)
     train_dl = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_dataset = MlSeqDataset(test_history, n_users, n_items)
     test_dl = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=True)
     # model SBPR_Loss optimizer
-    model = FPMC(n_users, n_items, 20, 20).to(device)
+    model = FPMC(n_users, n_items, EMBEDDING_DIM, EMBEDDING_DIM).to(device)
     BPR_Loss = lambda p, n: torch.log(1 + torch.exp(-p + n)).sum()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=TRIAL)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=REGULARIZATION)
 
     test_recall_list = []
     for epoch in range(EPOCH):
@@ -124,6 +130,6 @@ if __name__ == "__main__":
             model.eval()
             recall_test = recallN(model, test_dl, 10)
             test_recall_list.append(recall_test)
-        print("epoch {}, train loss is {}, Recall@10 is {:.4f}".
+        print("epoch {}, train loss is {:.4f}, Recall@10 is {:.4f}".
               format(epoch, sum(train_loss) / len(train_history), recall_test))
     print("max Recall@10 in test dataset: {:.4f}".format(max(test_recall_list)))
