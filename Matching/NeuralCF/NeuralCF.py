@@ -13,7 +13,7 @@ data_path = "../../dataset/ml-100k/u.data"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 e_dim = 8
-trail = 100
+regularization = 1e-6
 epochs = 100
 batch_size = 4096
 learning_rate = 1e-3
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     user_num, item_num = max(df[0]) + 1, max(df[1]) + 1
     model = NeuralMF(user_num, item_num, e_dim, layers).to(device)
-    optim = torch.optim.Adam(params=model.parameters(), lr=learning_rate, weight_decay=trail)
+    optim = torch.optim.Adam(params=model.parameters(), lr=learning_rate, weight_decay=regularization)
     loss_func = nn.MSELoss().to(device)
 
     train_loss_list, test_mse_list = [], []
@@ -149,7 +149,8 @@ if __name__ == "__main__":
                 predicts.extend(predict.tolist())
         mse = mean_squared_error(np.array(labels), np.array(predicts))
         test_mse_list.append(mse)
-        print("epoch {}, train loss is {}, val mse is {}".format(epoch, train_loss, mse))
+        print("epoch {}, train loss is {:.4f}, val mse is {:.4f}".format(epoch, train_loss, mse))
+    print("min test mse loss is {:.4f}".format(min(test_mse_list)))
     plt.plot(train_loss_list, label='train_loss')
     plt.plot(test_mse_list, label='test_mse')
     plt.legend()
