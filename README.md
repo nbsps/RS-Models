@@ -3,6 +3,8 @@ PyTorch Implementation of classic Recommender System Models mainly used for **se
 
 > checkout for [tensorflow](https://github.com/nbsps/RS-Models/tree/tensorflow) branch
 
+> **corresponding papers** 🚀 [RS_Papers 📖](https://github.com/nbsps/RS_CA_Papers)
+
 ## Matching
 
 ### Matrix Factorization
