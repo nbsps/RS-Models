@@ -115,8 +115,8 @@ if __name__ == "__main__":
     train_X, test_X, train_y, test_y = train_test_split(data, y, train_size=0.7, random_state=2022)
     train_dataset = CriteoDataset(train_X, train_y)
     test_dataset = CriteoDataset(test_X, test_y)
-    train_loader = DataLoader(train_dataset, batch_size=1024)
-    test_loader = DataLoader(test_dataset, batch_size=1024)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE)
 
     model = NeuralFactorizationMachine(field_dims, EMBEDDING_DIM).to(device)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=REGULARIZATION)
