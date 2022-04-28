@@ -84,9 +84,11 @@ class FactorizationMachineSupportedNeuralNetwork(nn.Module):
         self.embed1 = Embedding(sum(field_dims), 1)
         self.embed2 = Embedding(sum(field_dims), embed_dim)
         self.mlp = MultiLayerPerceptron([(embed_dim + 1) * len(field_dims), 128, 64, 32, 1])
+        self.offsets = np.array((0, *np.cumsum(field_dims)[:-1],), dtype=np.int)
 
     def forward(self, x):
         # x shape: (batch_size, num_fields)
+        x = x + x.new_tensor(self.offsets)
         w = self.embed1(x).squeeze(-1)
         v = self.embed2(x).reshape(x.shape[0], -1)
         stacked = torch.hstack([w, v])
