@@ -171,4 +171,4 @@ if __name__ == "__main__":
             HT_list.append(t_test[1])
         print("epoch {}, train loss is {:.4f}, test (NDCG@10: {:.4f}, HR@10: {:.4f})".
               format(epoch, total_loss / total_len, t_test[0], t_test[1]))
-    print("max NDCG@10 is {:.4f}, HR@10 is {:.4f}".format(min(NDCG_list), min(HT_list)))
+    print("max NDCG@10 is {:.4f}, HR@10 is {:.4f}".format(max(NDCG_list), max(HT_list)))
