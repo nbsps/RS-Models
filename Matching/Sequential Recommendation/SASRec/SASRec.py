@@ -7,7 +7,7 @@ from torch import optim, nn
 from torch.utils.data import Dataset, DataLoader
 
 
-data_path = '../../dataset/criteo/train.csv'
+data_path = '../../../dataset/ml-100k/u.data'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 EMBEDDING_DIM = 64
@@ -126,7 +126,7 @@ def evaluate(model):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv('../../../dataset/ml-100k/u.data', header=None, sep="\t")
+    df = pd.read_csv(data_path, header=None, sep="\t")
     df.columns = ['user_id', 'item_id', 'rating', 'timestamp']
     df.sort_values('timestamp', inplace=True)
     df.reset_index(drop=True)
