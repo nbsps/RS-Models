@@ -1,4 +1,5 @@
-#### 🟢🟠🔴
+<h2 align="center">Recommender System WITH PyTorch 🟢🟠🔴 </h2>
+
 PyTorch Implementation of classic Recommender System Models mainly used for **self-learing&communication**.
 
 > checkout for [tensorflow](https://github.com/nbsps/RS-Models/tree/tensorflow) branch
@@ -31,10 +32,9 @@ PyTorch Implementation of classic Recommender System Models mainly used for **se
 
 ### Knowledge aware
 
-| Model         | dataset   | loss_func            | metrics       | state |
-| ------------- | --------- | -------------------- | ------------- | ----- |
-| **CKE**       | `ml-100k` | marginLoss & MSELoss | -             | 🟠     |
-| **RippleNet** | `ml-100k` | BCELoss              | `AUC: 0.8622` | 🟠     |
+| Model         | dataset | loss_func            | metrics       | state |
+| ------------- | ------- | -------------------- | ------------- | ----- |
+| **RippleNet** | `ml-1m` | BCELoss              | `AUC: 0.8838` | 🟢     |
 
 ### Graph embedding
 
@@ -76,12 +76,16 @@ PyTorch Implementation of classic Recommender System Models mainly used for **se
 | **PNN**           | `criteo`      | BCELoss   | `AUC: 0.6360` | 🟢     |
 | **Wide&Deep**     | `criteo`      | BCELoss   | `AUC: 0.7074` | 🟢     |
 | **DCN**           | `criteo`      | BCELoss   | `AUC: 0.7335` | 🟢     |
-| **DIN**           | `amazon book` | BCELoss   | `AUC: 0.5988` | 🟠     |
+| **DIN**           | `amazon book` | BCELoss   | `AUC: 0.5988` | 🟢     |
+
+> DIN: It seems that the feature engineering(negative sampling) of paper used for `amazon book` seems bad. I try hard but the auc of test cannot reach the `0.811` on `amazon book`.
 
 ### Multi tasks
 
-| Model    | dataset | loss_func | metrics | state |
-| -------- | ------- | --------- | ------- | ----- |
-| **MMOE** | -       | -         | -       | 🔴     |
-| **ESMM** | -       | -         | -       | 🔴     |
+| Model    | dataset       | loss_func         | metrics                                       | state |
+| -------- | ------------- | ----------------- | --------------------------------------------- | ----- |
+| **MMOE** | census-income | BCEWithLogitsLoss | `income-AUC: 0.9061` `marry-AUC: 0.9637`      | 🟢     |
+| **ESMM** | census-income | BCEWithLogitsLoss | `income-ctr-AUC:  0.9242` `ctcvr-AUC: 0.9122` | 🟢     |
+
+
 
